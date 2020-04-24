@@ -54,7 +54,6 @@ unsigned short get_DAC_command(float v_out, unsigned char channel){
      //write to channel A = 0, B = 1; 
     
     unsigned short ret_command = channel << 15 | (0b111 << 12) | duty_cycle; 
-   
     return ret_command; 
 }
 

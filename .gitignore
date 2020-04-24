@@ -3,3 +3,5 @@
 .idea*
 /HW2/firmware/HW2_code.X/dist/
 /HW2/firmware/HW2_code.X/build/
+/HW3/firmware/HW3_code.X/build/
+/HW3/firmware/HW3_code.X/dist/
