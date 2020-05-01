@@ -63,24 +63,28 @@ int main() {
     TRISAbits.TRISA4 = 0;
     TRISBbits.TRISB4 = 1;
     LATAbits.LATA4 = 0;
-        
+
     i2c_master_setup();               // start setup i2c; 
-    configure_MCP_IO();
+    ssd1306_setup();
     
     __builtin_enable_interrupts();
     
-    const short frequency = 20;      //update frequency
+    const short frequency = 1;      //update frequency
   
     while (1) {
+        
         LATAINV = 0x0010;           // invert LATA4 value for a heart beat LED
-        if (if_button_pressed()!=0){
-            invert_LED(); 
-            while(if_button_pressed()!=0){}     //wait until the button is released
-
-        }
+        unsigned short int chars_size = (128/6)*(32/4);
+        char msg[chars_size]; 
+//        sprintf(msg, "you pen");
+        sprintf(msg, "I Love you Justine, you want to be happy, loved, and what do you think I want?");                //I almost tripped here. 
+        drawMessage(0, 0, msg); 
+        
         //        i2c_master_
         while (_CP0_GET_COUNT()<(48000000/2)/frequency){}   //1hz
             _CP0_SET_COUNT(0);
-
+           
+    
     }
+    
 }

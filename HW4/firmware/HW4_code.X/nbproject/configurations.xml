@@ -12,9 +12,12 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <itemPath>../src/main.c</itemPath>
-      <itemPath>../src/I2C.h</itemPath>
+      <itemPath>../src/ssd1306.c</itemPath>
+      <itemPath>../src/ssd1306.h</itemPath>
       <itemPath>../src/I2C.c</itemPath>
+      <itemPath>../src/I2C.h</itemPath>
+      <itemPath>../src/main.c</itemPath>
+      <itemPath>../src/font.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
