@@ -68,9 +68,9 @@ int main() {
     
     
     wsHSB LED0 = {0.0, 1.0, 0.2};
-    wsHSB LED1 = {0.0, 1.0, 0.2}; 
-    wsHSB LED2 = {0.0, 1.0, 0.2};
-    wsHSB LED3 = {0.0, 1.0, 0.2}; 
+    wsHSB LED1 = {90.0, 1.0, 0.2}; 
+    wsHSB LED2 = {180.0, 1.0, 0.2};
+    wsHSB LED3 = {270.0, 1.0, 0.2}; 
     int frequency = 20; 
 
     while(1){
@@ -83,22 +83,13 @@ int main() {
         wsColor c[] = {Color0, Color1, Color2, Color3}; 
         int num_LED = 4; 
         
-       
-        //TODO 
-//        c[0].r = 128;         
-//        c[0].g = 128; 
-//        c[0].b = 0; 
-//
-//        c[1].r = 0;         
-//        c[1].g = 128; 
-//        c[1].b = 0; 
         
         ws2812b_setColor(c, num_LED); 
         
-//        increment_hue(&LED0);        
-//        increment_hue(&LED1);
-//        increment_hue(&LED2);
-//        increment_hue(&LED3);
+        increment_hue(&LED0);        
+        increment_hue(&LED1);
+        increment_hue(&LED2);
+        increment_hue(&LED3);
         
                 //        i2c_master_
         while (_CP0_GET_COUNT()<(48000000/2)/frequency){}   //1hz
