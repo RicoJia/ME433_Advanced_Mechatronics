@@ -9,7 +9,8 @@
 
 #include<xc.h>           // processor SFR definitions
 #include<sys/attribs.h>  // __ISR macro
-#include"I2C.h"
+#include"i2c.h"
+#include"imu.h"
 #include "ssd1306.h"
 
 // DEVCFG0
@@ -61,30 +62,44 @@ int main() {
     // do your TRIS and LAT commands here
     //initializes B4 as input and A4 as output (0) that is initially off.
     TRISAbits.TRISA4 = 0;
-    TRISBbits.TRISB4 = 1;
     LATAbits.LATA4 = 0;
 
-    i2c_master_setup();               // start setup i2c; 
+    i2c1_master_setup();               // start setup i2c; 
+    i2c2_master_setup();               // start setup i2c; 
+
+    
     ssd1306_setup();
+    imu_setup(); 
     
     __builtin_enable_interrupts();
     
 //    const short frequency = 1;      //update frequency
-     unsigned short int chars_size = (128/6)*(32/4);
-     char msg[chars_size]; 
-    _CP0_SET_COUNT(0);
     
+  
     while (1) {
         
         LATAINV = 0x0010;           // invert LATA4 value for a heart beat LED
-
-//        sprintf(msg, "I Love you Justine, you want to be happy, loved, and what do you think I want?");                //I almost tripped here. 
-        double fps = 24000000.0/((double) _CP0_GET_COUNT()); 
-        _CP0_SET_COUNT(0);
-        sprintf(msg, "FPS: %f", fps); 
+        
+        int length = 14; 
+        signed short data[length]; 
+        imu_read(IMU_OUT_TEMP_L, data, length); 
+        
+        unsigned short int chars_size = (128/6)*(32/4);
+        double acc_scale = 2 * 9.81/32767; 
+        char msg[chars_size]; 
+        
+        //how to scale Temperature? 
+        sprintf(msg, "acc_x: %f || acc_y: %f || acc_z: %f ||", data[4] * acc_scale, data[5]* acc_scale, data[6] * acc_scale); 
+        
+//        double a_x, a_y, a_z, w_x, w_y, w_z, T; 
+//        a_x = 3.0; a_y = 3.0; a_z = 3.0; w_x = 3.0; w_y = 3.0; w_z = 3.0; T = 2.0; 
+//        sprintf(msg, "a_x: %f, a_y: %f, a_z: %f, w_x: %f, w_y: %f, w_z: %f, T%f", 
+//                a_x, a_y, a_z, w_x, w_y, w_z, T);                //I almost tripped here. 
+        
+        
         drawMessage(0, 0, msg); 
         
-        //        i2c_master_
+//        //        i2c_master_
 //        while (_CP0_GET_COUNT()<(48000000/2)/frequency){}   //1hz
 //            _CP0_SET_COUNT(0);
            

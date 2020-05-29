@@ -42,11 +42,11 @@ void ssd1306_setup() {
 
 // send a command instruction (not pixel data)
 void ssd1306_command(unsigned char c) {
-    i2c_master_start();
-    i2c_master_send(ssd1306_write);
-    i2c_master_send(0x00); // bit 7 is 0 for Co bit (data bytes only), bit 6 is 0 for DC (data is a command))
-    i2c_master_send(c);
-    i2c_master_stop();
+    i2c1_master_start();
+    i2c1_master_send(ssd1306_write);
+    i2c1_master_send(0x00); // bit 7 is 0 for Co bit (data bytes only), bit 6 is 0 for DC (data is a command))
+    i2c1_master_send(c);
+    i2c1_master_stop();
 }
 
 //-------------------------------------------mid level control----------------------------------------
@@ -62,14 +62,14 @@ void ssd1306_update() {
 
     unsigned short count = 512; // WIDTH * ((HEIGHT + 7) / 8)
     unsigned char * ptr = ssd1306_buffer; // first address of the pixel buffer
-    i2c_master_start();
-    i2c_master_send(ssd1306_write);
-    i2c_master_send(0x40); // send pixel data
+    i2c1_master_start();
+    i2c1_master_send(ssd1306_write);
+    i2c1_master_send(0x40); // send pixel data
     // send every pixel
     while (count--) {
-        i2c_master_send(*ptr++);
+        i2c1_master_send(*ptr++);
     }
-    i2c_master_stop();
+    i2c1_master_stop();
 }
 
 // set a pixel value. Call update() to push to the display)
@@ -129,16 +129,19 @@ void write_char(char c){
         position_tracker.move_to_next_pos(&position_tracker); //update position
     }
         position_tracker.move_to_next_pos(&position_tracker); //move to the right by one. 
+
 }
 
 void drawMessage(double x, double y, char* msg){        //use sprintf())
     ssd1306_clear(); 
+
     position_tracker.reset_pos(&position_tracker, x, y); 
     unsigned int i = 0; 
     while (msg[i]!='\0'){
         write_char(msg[i]); 
         ++i;
     }
-                                           
+                          
+                   
     ssd1306_update();           //to truly update pixels in the screen
 }
