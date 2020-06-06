@@ -1,29 +1,16 @@
 ///*******************************************************************************
-//  Main Source File
-//
-//  Company:
-//    Microchip Technology Inc.
-//
 //  File Name:
 //    main.c
 //
 //  Summary:
-//    This file contains the "main" function for a project.
-//
-//  Description:
-//    This file contains the "main" function for a project.  The
-//    "main" function calls the "SYS_Initialize" function to initialize the state
-//    machines of all modules in the system
-// *******************************************************************************/
-//
-//// *****************************************************************************
-//// *****************************************************************************
-//// Section: Included Files
-//// *****************************************************************************
-//// *****************************************************************************
+// RTCC timer. Changes to previous file: FSOSCEN, pin layout. 
+
 
 #include<xc.h>           // processor SFR definitions
 #include<sys/attribs.h>  // __ISR macro
+#include "ssd1306.h"
+#include "i2c.h"
+#include "rtcc.h"
 
 // DEVCFG0
 #pragma config DEBUG = OFF // disable debugging
@@ -35,7 +22,7 @@
 
 // DEVCFG1
 #pragma config FNOSC = PRIPLL // use primary oscillator with pll
-#pragma config FSOSCEN = OFF // disable secondary oscillator
+#pragma config FSOSCEN = ON // Enable secondary oscillator, which will disable the heartbeat LED
 #pragma config IESO = OFF // disable switching clocks
 #pragma config POSCMOD = HS // high speed crystal mode
 #pragma config OSCIOFNC = OFF // disable clock output
@@ -57,57 +44,56 @@
 #pragma config PMDL1WAY = OFF // allow multiple reconfigurations
 #pragma config IOL1WAY = OFF // allow multiple reconfigurations
 
-//question: 
+
+
 int main() {
 
     __builtin_disable_interrupts(); // disable interrupts while initializing things
-
     // set the CP0 CONFIG register to indicate that kseg0 is cacheable (0x3)
     __builtin_mtc0(_CP0_CONFIG, _CP0_CONFIG_SELECT, 0xa4210583);
-
     // 0 data RAM access wait states
     BMXCONbits.BMXWSDRM = 0x0;
-
     // enable multi vector interrupts
     INTCONbits.MVEC = 0x1;
-
     // disable JTAG to get pins back
     DDPCONbits.JTAGEN = 0;
 
-        // do your TRIS and LAT commands here
+    // do your TRIS and LAT commands here
     //initializes B7 as input and B5 as output (0) that is initially off.
     TRISBbits.TRISB5 = 0;
     LATBbits.LATB5 = 0; 
-    TRISBbits.TRISB7 = 1;
+
+    i2c1_master_setup();               // start setup i2c; 
+    ssd1306_setup();
     
-    //Remember that the TRISx SFR controls whether a pin is an input (1) or an output (0). 
-    //The PORTx SFR is read to determine if an input pin is on (1) or off (0).
-    
+    //clock initialization
+    unsigned long init_time = 0x16450000; 
+    unsigned long init_date = 0x20060606; 
+    rtcc_setup(init_time, init_date); 
+
     __builtin_enable_interrupts();
-
+    
+  
     while (1) {
-        // use _CP0_SET_COUNT(0) and _CP0_GET_COUNT() to test the PIC timing
-        // remember the core timer runs at half the sysclk
         
-        if (!PORTBbits.RB4){
-            while (_CP0_GET_COUNT()<24000000/2){}
-            LATBINV = 0x0020;           // invert LATB5 value for a heart beat LED (note that this is hex number, 20 is actually 32 in decimal)
-            _CP0_SET_COUNT(0);
-
-            while (_CP0_GET_COUNT()<24000000/2){}
-            LATBINV = 0x0020;           // invert LATB5 value for a heart beat LED (note that this is hex number, 20 is actually 32 in decimal)
-            _CP0_SET_COUNT(0);
-            
-            while (_CP0_GET_COUNT()<24000000/2){}
-            LATBINV = 0x0020;           // invert LATB5 value for a heart beat LED (note that this is hex number, 20 is actually 32 in decimal)
-            _CP0_SET_COUNT(0);
-
-            while (_CP0_GET_COUNT()<24000000/2){}
-            LATBINV = 0x0020;           // invert LATB5 value for a heart beat LED (note that this is hex number, 20 is actually 32 in decimal)
-            _CP0_SET_COUNT(0);
-            
-        }
+        LATBINV = 0x0020;           // invert LATB5 value for a heart beat LED (note that this is hex number, 20 is actually 32 in decimal)
         
+        rtccTime time = readRTCC(); 
+        char wday[11];
+        dayOfTheWeek(time.wk, wday);
         
+        unsigned short int chars_size = (128/6)*(32/4);
+        char msg[chars_size]; 
+        sprintf(msg, "Date: 20%d%d/%d%d/%d%d | Time: %d%d:%d%d:%d%d |%s " , 
+                time.yr10, time.yr01, time.mn10,time.mn01, time.dy10, time.dy01,
+                time.hr10, time.hr01, time.min10, time.min01, time.sec10, time.sec01,
+                wday); 
+        
+        drawMessage(0, 0, msg); 
+        
+        //2hz update
+        while (_CP0_GET_COUNT()<(48000000/2)/2){} 
+            _CP0_SET_COUNT(0);
     }
+    
 }

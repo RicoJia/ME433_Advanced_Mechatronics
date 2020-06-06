@@ -57,12 +57,13 @@ int main() {
     INTCONbits.MVEC = 0x1;
     // disable JTAG to get pins back
     DDPCONbits.JTAGEN = 0;
+    
+        // do your TRIS and LAT commands here
+    //initializes B7 as input and B5 as output (0) that is initially off.
+    TRISBbits.TRISB5 = 0;
+    LATBbits.LATB5 = 0; 
+    TRISBbits.TRISB7 = 1;
 
-    // do your TRIS and LAT commands here
-    //initializes B4 as input and A4 as output (0) that is initially off.
-    TRISAbits.TRISA4 = 0;
-    TRISBbits.TRISB4 = 1;
-    LATAbits.LATA4 = 0;
 
     i2c_master_setup();               // start setup i2c; 
     ssd1306_setup();
@@ -76,7 +77,7 @@ int main() {
     
     while (1) {
         
-        LATAINV = 0x0010;           // invert LATA4 value for a heart beat LED
+        LATBINV = 0x0020;           // invert LATB5 value for a heart beat LED (note that this is hex number, 20 is actually 32 in decimal)
 
 //        sprintf(msg, "I Love you Justine, you want to be happy, loved, and what do you think I want?");                //I almost tripped here. 
         double fps = 24000000.0/((double) _CP0_GET_COUNT()); 

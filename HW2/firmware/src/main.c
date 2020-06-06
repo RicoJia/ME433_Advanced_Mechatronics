@@ -71,11 +71,11 @@ int main() {
     // disable JTAG to get pins back
     DDPCONbits.JTAGEN = 0;
 
-    // do your TRIS and LAT commands here
-    //initializes B4 as input and A4 as output (0) that is initially off.
-    TRISAbits.TRISA4 = 0;
-    TRISBbits.TRISB4 = 1;
-    LATAbits.LATA4 = 0;
+        // do your TRIS and LAT commands here
+    //initializes B7 as input and B5 as output (0) that is initially off.
+    TRISBbits.TRISB5 = 0;
+    LATBbits.LATB5 = 0; 
+    TRISBbits.TRISB7 = 1;
     
     initSPI();  //initialize SPI
     __builtin_enable_interrupts();
@@ -97,7 +97,7 @@ int main() {
 
     while (1) {
         
-        LATAbits.LATA0 = 0;     //Bring CS low
+        LATBINV = 0x0020;           // invert LATB5 value for a heart beat LED (note that this is hex number, 20 is actually 32 in decimal)
         
         // sine wave function that ranges [0,3.3]
         float time = count * 1.0 / frequency; 

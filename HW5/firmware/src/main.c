@@ -58,9 +58,9 @@ int main() {
     DDPCONbits.JTAGEN = 0;
 
     // do your TRIS and LAT commands here
-    //initializes B4 as input and A4 as output (0) that is initially off.
-    TRISAbits.TRISA4 = 0;
-    LATAbits.LATA4 = 0;
+    //initializes B7 as input and B5 as output (0) that is initially off.
+    TRISBbits.TRISB5 = 0;
+    LATBbits.LATB5 = 0; 
     
     ws2812b_setup(); 
     
@@ -74,7 +74,8 @@ int main() {
     int frequency = 20; 
 
     while(1){
-                LATAINV = 0x0010;           // invert LATA4 value for a heart beat LED
+        LATBINV = 0x0020;           // invert LATB5 value for a heart beat LED (note that this is hex number, 20 is actually 32 in decimal)
+
         wsColor Color0 = HSBtoRGB(LED0.h, LED0.s, LED0.b); 
         wsColor Color1 = HSBtoRGB(LED1.h, LED1.s, LED1.b);         
         wsColor Color2 = HSBtoRGB(LED2.h, LED2.s, LED2.b); 

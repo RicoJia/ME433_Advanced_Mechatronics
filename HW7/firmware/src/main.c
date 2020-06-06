@@ -59,9 +59,9 @@ int main() {
     DDPCONbits.JTAGEN = 0;
 
     // do your TRIS and LAT commands here
-    //initializes B4 as input and A4 as output (0) that is initially off.
-    TRISAbits.TRISA4 = 0;
-    LATAbits.LATA4 = 0;
+    //initializes B7 as input and B5 as output (0) that is initially off.
+    TRISBbits.TRISB5 = 0;
+    LATBbits.LATB5 = 0; 
 
     adc_setup();    
     ctmu_setup(); 
@@ -87,8 +87,7 @@ int main() {
     int adc_ret_buffer[buffer_size]; 
   
     while (1) {
-        
-        LATAINV = 0x0010;           // invert LATA4 value for a heart beat LED
+        LATBINV = 0x0020;           // invert LATB5 value for a heart beat LED (note that this is hex number, 20 is actually 32 in decimal)
 
         // get average adc value
         int adc_ret = ctmu_read(pin1, delay); 
@@ -103,10 +102,10 @@ int main() {
         drawMessage(0, 0, msg); 
         
         // change Addressable LED accordingly
-        LED0.b = (int) 1.0 - (adc_avg/1023.0);
-        LED1.b = (int) 1.0 - (adc_avg/1023.0); 
-        LED2.b = (int) 1.0 - (adc_avg/1023.0); 
-        LED3.b = (int) 1.0 -  (adc_avg/1023.0); 
+        LED0.b =  1.0 * (1.0 - (adc_avg/1023.0));
+        LED1.b =  0;
+        LED2.b =  0;
+        LED3.b =  0;
 
         wsColor Color0 = HSBtoRGB(LED0.h, LED0.s, LED0.b); 
         wsColor Color1 = HSBtoRGB(LED1.h, LED1.s, LED1.b);         

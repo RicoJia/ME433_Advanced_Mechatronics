@@ -58,11 +58,12 @@ int main() {
     // disable JTAG to get pins back
     DDPCONbits.JTAGEN = 0;
 
-    // do your TRIS and LAT commands here
-    //initializes B4 as input and A4 as output (0) that is initially off.
-    TRISAbits.TRISA4 = 0;
-    TRISBbits.TRISB4 = 1;
-    LATAbits.LATA4 = 0;
+        // do your TRIS and LAT commands here
+    //initializes B7 as input and B5 as output (0) that is initially off.
+    TRISBbits.TRISB5 = 0;
+    LATBbits.LATB5 = 0; 
+    TRISBbits.TRISB7 = 1;
+   
         
     i2c_master_setup();               // start setup i2c; 
     configure_MCP_IO();
@@ -72,7 +73,8 @@ int main() {
     const short frequency = 20;      //update frequency
   
     while (1) {
-        LATAINV = 0x0010;           // invert LATA4 value for a heart beat LED
+        LATBINV = 0x0020;           // invert LATB5 value for a heart beat LED (note that this is hex number, 20 is actually 32 in decimal)
+
         if (if_button_pressed()!=0){
             invert_LED(); 
             while(if_button_pressed()!=0){}     //wait until the button is released

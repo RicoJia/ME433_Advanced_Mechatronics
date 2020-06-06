@@ -60,9 +60,9 @@ int main() {
     DDPCONbits.JTAGEN = 0;
 
     // do your TRIS and LAT commands here
-    //initializes B4 as input and A4 as output (0) that is initially off.
-    TRISAbits.TRISA4 = 0;
-    LATAbits.LATA4 = 0;
+    //initializes B7 as input and B5 as output (0) that is initially off.
+    TRISBbits.TRISB5 = 0;
+    LATBbits.LATB5 = 0; 
 
     i2c1_master_setup();               // start setup i2c; 
     i2c2_master_setup();               // start setup i2c; 
@@ -78,7 +78,7 @@ int main() {
   
     while (1) {
         
-        LATAINV = 0x0010;           // invert LATA4 value for a heart beat LED
+        LATBINV = 0x0020;           // invert LATB5 value for a heart beat LED (note that this is hex number, 20 is actually 32 in decimal)
         
         int length = 14; 
         signed short data[length]; 
